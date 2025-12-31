@@ -1,0 +1,9 @@
+requests
+pandas
+python-dotenv
+openai
+streamlit
+azure-functions
+numpy
+pytest
+beads-mcp

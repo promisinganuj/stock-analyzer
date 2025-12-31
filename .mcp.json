@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "beads": {
+      "type": "stdio",
+      "command": "beads-mcp",
+      "args": [],
+      "env": {
+        "BEADS_WORKING_DIR": "/Users/anuj/claude-playground/stock-analyzer"
+      }
+    }
+  }
+}
