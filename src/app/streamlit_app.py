@@ -1,4 +1,5 @@
 import sys
+import html
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -36,9 +37,21 @@ def _fmt_dt(value) -> str:
     if value is None:
         return ""
     try:
+        if isinstance(value, datetime):
+            if value.tzinfo is None:
+                value = value.replace(tzinfo=timezone.utc)
+            return value.astimezone(timezone.utc).strftime("%Y-%m-%d")
         # Finnhub uses Unix seconds in `datetime`
         if isinstance(value, (int, float)):
             return datetime.fromtimestamp(value, tz=timezone.utc).strftime("%Y-%m-%d")
+        if isinstance(value, str):
+            try:
+                parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+                if parsed.tzinfo is None:
+                    parsed = parsed.replace(tzinfo=timezone.utc)
+                return parsed.astimezone(timezone.utc).strftime("%Y-%m-%d")
+            except Exception:
+                return value
         return str(value)
     except Exception:
         return str(value)
@@ -662,21 +675,52 @@ with tab5:
     st.markdown("### Recent News (7 days)")
     raw_news = result.get("raw_news") or []
     if isinstance(raw_news, list) and raw_news:
-        for item in raw_news[:8]:
-            headline = item.get("headline") or item.get("title") or "(no headline)"
-            url = item.get("url")
-            source = item.get("source") or ""
-            dt = _fmt_dt(item.get("datetime") or item.get("date"))
-            summary = item.get("summary") or ""
+        def _one_line(text: str) -> str:
+            return " ".join((text or "").split()).strip()
 
+        def _truncate(text: str, max_len: int = 220) -> str:
+            text = _one_line(text)
+            if not text:
+                return "—"
+            if len(text) <= max_len:
+                return text
+            return (text[: max_len - 1].rstrip() + "…")
+
+        rows = []
+        for item in raw_news[:8]:
+            dt = _fmt_dt(item.get("datetime") or item.get("date")) or "—"
+            source = item.get("source") or item.get("sourceName") or item.get("publisher") or "—"
+            title = item.get("headline") or item.get("title") or "(headline unavailable)"
+            url = item.get("url") or ""
+            summary = _truncate(item.get("summary") or item.get("description") or "")
+            rows.append({"Date": dt, "Source": source, "Summary": summary, "Title": title, "Url": url})
+
+        html_lines = [
+            "<table>",
+            "<thead><tr><th>Date</th><th>Source</th><th>Summary</th><th>Link</th></tr></thead>",
+            "<tbody>",
+        ]
+        for row in rows:
+            date_cell = html.escape(str(row.get("Date") or "—"))
+            source_cell = html.escape(str(row.get("Source") or "—"))
+            summary_cell = html.escape(str(row.get("Summary") or "—"))
+            title_text = str(row.get("Title") or "(headline unavailable)")
+            url = str(row.get("Url") or "")
             if url:
-                st.markdown(f"**[{headline}]({url})**")
+                link_cell = (
+                    f'<a href="{html.escape(url, quote=True)}" target="_blank" rel="noopener noreferrer">'
+                    f"{html.escape(title_text)}"
+                    "</a>"
+                )
             else:
-                st.markdown(f"**{headline}**")
-            st.caption(" · ".join([p for p in [dt, source] if p]))
-            if summary:
-                st.write(summary)
-            st.divider()
+                link_cell = html.escape(title_text)
+
+            html_lines.append(
+                f"<tr><td>{date_cell}</td><td>{source_cell}</td><td>{summary_cell}</td><td>{link_cell}</td></tr>"
+            )
+
+        html_lines.append("</tbody></table>")
+        st.markdown("\n".join(html_lines), unsafe_allow_html=True)
     else:
         st.info("No recent news items available.")
 
