@@ -25,24 +25,23 @@ Beads issues are the source of truth. Before implementation starts, the issue sh
 
 ## Landing the Plane (Session Completion)
 
-**When ending a work session**, you MUST complete ALL steps below. Work is NOT  
-complete until `git push` succeeds.
+**When the user says "let's land the plane"**, follow this clean session-ending protocol:
 
-**MANDATORY WORKFLOW:**
-
-1. File issues for any follow-ups
-2. Run quality gates (tests/lint/build) for changed code
-3. Update Beads issue status/notes
-4. Push to remote:
+1. **File beads issues for any remaining work** that needs follow-ups
+2. **Ensure all quality gates pass** (only if code change were made) - run tests, linters, builds as applicable. File P0 issues for any failures.
+3. **Update Beads issues** - close finished work, update status
+4. **Sync the isseu tracker carefully**: Work methodically to ensure both local and remote issues merge safely. This may require pulling, handling conflicts (sometimes accepting remote changes and re-importing), syncing the database, and verifying consistency. Be creative and patient - the goal is clean reconciliation where no issues are lost.
+5. **Clean the git state**: - Clear old stashes and prune deap remote branches:
 
    ```bash
-   git pull --rebase
-   bd sync
-   git push
-   git status  # MUST show "up to date with origin"
+   git stash clear         # Remove old stashes
+   git remote prune origin # Clean up deleted remote branches
    ```
 
-5. Verify working tree is clean and branch is up to date
+6. **Verify clean state**: Ensure all changesa re committed and pushed, no untracked files remain.
+7. **Choose a follow-up issue for next session**
+   - Provide a promptyfor the use to give yo you in the next session.
+   - Format: [Continue work on <issue id>: <short description>] [Brief context about what's been done and what's next]"
 
 **CRITICAL RULES:**
 
