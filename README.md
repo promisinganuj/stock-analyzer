@@ -26,6 +26,16 @@ This is a starter scaffold — adapt data providers, models, and deployment for 
    streamlit run src/app/streamlit_app.py
    ```
 
+### Optional: run without Alpha Vantage (EOD prices)
+
+For US stocks end-of-day (EOD) price history without an API key, set:
+
+```bash
+export PRICE_PROVIDER=stooq
+```
+
+This uses Stooq as the price backend. If `PRICE_PROVIDER` is unset, the app uses the existing Alpha Vantage implementation.
+
 ## What’s included
 
 - `src/` : core Python packages for fetchers, analysis, agent orchestration,  
