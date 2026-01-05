@@ -12,6 +12,7 @@ import pandas as pd
 import streamlit as st
 
 from src.agent.orchestrator import analyze_stock
+from src.app.pdf_report import build_pdf_report_bytes, default_pdf_filename
 from src.utils.logging import LOG
 
 
@@ -402,6 +403,26 @@ col1.metric("Symbol", context.get("symbol", symbol))
 col2.metric("Last Close", f"${technical.get('close', float('nan')):.2f}" if technical.get("close") is not None else "—")
 col3.markdown(f"**Trend**  \n{_colored_trend(technical.get('trend'))}")
 col4.metric("RSI (14)", f"{technical.get('rsi', float('nan')):.1f}" if technical.get("rsi") is not None else "—")
+
+export_err: str | None = None
+export_bytes: bytes | None = None
+try:
+    export_bytes = build_pdf_report_bytes(result)
+except Exception as exc:
+    LOG.exception("PDF export failed")
+    export_err = str(exc)
+
+export_filename = default_pdf_filename(context.get("symbol") or symbol)
+if export_err:
+    st.error(f"Export to PDF unavailable: {export_err}")
+elif export_bytes:
+    st.download_button(
+        "Export to PDF",
+        data=export_bytes,
+        file_name=export_filename,
+        mime="application/pdf",
+        use_container_width=False,
+    )
 
 if _get_tooltip("rsi"):
     st.caption(f"💡 {_get_tooltip('rsi')}")

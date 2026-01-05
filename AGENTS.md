@@ -63,7 +63,6 @@ For any issue that should be “implement-ready”, capture (in the issue’s de
 4. **Repeat**
    - Any new follow-ups discovered during implementation become new Beads issues.
 
-
 ## Landing the Plane (Session Completion)
 
 **When ending a work session**, you MUST complete ALL steps below. Work is NOT  
