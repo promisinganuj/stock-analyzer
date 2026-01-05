@@ -6,14 +6,15 @@ from src.utils.logging import LOG
 from src.data_fetchers.prices_stooq import fetch_price_history_stooq
 
 def fetch_price_history(symbol: str, outputsize: str = "compact") -> pd.DataFrame:
-    if PRICE_PROVIDER:
-        if PRICE_PROVIDER == "stooq":
-            return fetch_price_history_stooq(symbol)
-        if PRICE_PROVIDER not in {"alpha_vantage", "alphavantage"}:
-            raise ValueError(f"Unknown PRICE_PROVIDER={PRICE_PROVIDER!r}")
+    if PRICE_PROVIDER == "stooq":
+        return fetch_price_history_stooq(symbol)
 
-    if not ALPHA_VANTAGE_KEY:
-        raise RuntimeError("ALPHA_VANTAGE_KEY not set in environment")
+    if PRICE_PROVIDER in {"alpha_vantage", "alphavantage"}:
+        if not ALPHA_VANTAGE_KEY:
+            raise RuntimeError("ALPHA_VANTAGE_KEY not set in environment")
+    else:
+        raise ValueError(f"Unknown PRICE_PROVIDER={PRICE_PROVIDER!r}")
+
     url = (
         "https://www.alphavantage.co/query"
         f"?function=TIME_SERIES_DAILY&symbol={symbol}&outputsize={outputsize}&apikey={ALPHA_VANTAGE_KEY}"

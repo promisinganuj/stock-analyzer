@@ -34,7 +34,14 @@ For US stocks end-of-day (EOD) price history without an API key, set:
 export PRICE_PROVIDER=stooq
 ```
 
-This uses Stooq as the price backend. If `PRICE_PROVIDER` is unset, the app uses the existing Alpha Vantage implementation.
+This uses Stooq as the default price backend.
+
+To use Alpha Vantage instead:
+
+```bash
+export PRICE_PROVIDER=alphavantage
+export ALPHA_VANTAGE_KEY=...  # required
+```
 
 ## What’s included
 

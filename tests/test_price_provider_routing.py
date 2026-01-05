@@ -27,13 +27,17 @@ def _reload_prices_module(price_provider: str | None):
     return prices
 
 
-def test_price_provider_unset_preserves_alpha_vantage_error_when_key_missing(monkeypatch):
+def test_price_provider_unset_defaults_to_stooq(monkeypatch):
     # Prevent python-dotenv from repopulating the key from a local .env during reload.
     monkeypatch.setenv("ALPHA_VANTAGE_KEY", "")
     prices = _reload_prices_module(None)
 
-    with pytest.raises(RuntimeError, match="ALPHA_VANTAGE_KEY not set"):
-        prices.fetch_price_history("AAPL")
+    fake_df = Mock()
+    with patch.object(prices, "fetch_price_history_stooq", return_value=fake_df) as stooq:
+        out = prices.fetch_price_history("AAPL")
+
+    stooq.assert_called_once_with("AAPL")
+    assert out is fake_df
 
 
 def test_price_provider_stooq_routes_to_stooq_backend(monkeypatch):
@@ -47,3 +51,11 @@ def test_price_provider_stooq_routes_to_stooq_backend(monkeypatch):
 
     stooq.assert_called_once_with("AAPL")
     assert out is fake_df
+
+
+def test_price_provider_alphavantage_requires_key(monkeypatch):
+    monkeypatch.setenv("ALPHA_VANTAGE_KEY", "")
+    prices = _reload_prices_module("alphavantage")
+
+    with pytest.raises(RuntimeError, match="ALPHA_VANTAGE_KEY not set"):
+        prices.fetch_price_history("AAPL")
