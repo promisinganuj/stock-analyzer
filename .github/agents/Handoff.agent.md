@@ -1,6 +1,6 @@
 ---
 description: 'Coordinate Planning ↔ Implement handoff using Beads as the source of truth. Produces a crisp next-action packet (issue IDs + context) without doing implementation work.'
-tools: []
+tools: ['vscode', 'execute', 'read', 'edit', 'search', 'web', 'agent', 'beads/*', 'todo']
 ---
 # Handoff Agent
 

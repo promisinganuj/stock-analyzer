@@ -1,6 +1,6 @@
 ---
 description: 'Pick a Beads issue, implement the code changes end-to-end, validate locally, update/close the issue, and push to remote.'
-tools: []
+tools: ['vscode', 'execute', 'read', 'edit', 'search', 'web', 'agent', 'beads/*', 'todo']
 ---
 # Implement Agent
 

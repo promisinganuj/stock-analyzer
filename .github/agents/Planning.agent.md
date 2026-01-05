@@ -1,6 +1,6 @@
 ---
 description: 'Plan work in Beads: decompose a goal into issues with acceptance criteria + dependencies, then hand off implementable tasks to the Implement agent.'
-tools: []
+tools: ['vscode', 'read', 'search', 'web', 'agent', 'beads/*', 'todo']
 ---
 # Planning Agent
 
