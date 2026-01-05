@@ -1,7 +1,5 @@
 import os
 import json
-import ssl
-import httpx
 from src.agent import tools
 from src.agent.prompts import SYSTEM_PROMPT
 from src.utils.logging import LOG
@@ -12,24 +10,21 @@ from src.data_fetchers.prices import fetch_price_history
 from openai import AzureOpenAI, OpenAI
 from src.utils.config import AZURE_OPENAI_KEY, AZURE_OPENAI_ENDPOINT
 
-# Create a custom httpx client that disables SSL verification
-# This is a workaround for macOS SSL certificate issues
-# WARNING: Only use this for development/testing, not production
-http_client = httpx.Client(verify=False)
-
-# Initialize the client
+# Initialize the OpenAI client with proper SSL verification enabled
+# If you encounter SSL certificate issues, fix them at the system level:
+#   - Install/update certifi: pip install --upgrade certifi
+#   - Update CA certificates on your system
+#   - For corporate proxies, configure SSL_CERT_FILE environment variable
 if AZURE_OPENAI_KEY and AZURE_OPENAI_ENDPOINT:
     client = AzureOpenAI(
         api_key=AZURE_OPENAI_KEY,
         api_version="2024-06-01",
-        azure_endpoint=AZURE_OPENAI_ENDPOINT,
-        http_client=http_client
+        azure_endpoint=AZURE_OPENAI_ENDPOINT
     )
 else:
     # Fallback to regular OpenAI
     client = OpenAI(
-        api_key=os.getenv("OPENAI_API_KEY"),
-        http_client=http_client
+        api_key=os.getenv("OPENAI_API_KEY")
     )
 
 TOOL_MAP = {
