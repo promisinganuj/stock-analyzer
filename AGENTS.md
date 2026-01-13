@@ -38,9 +38,9 @@ Beads issues are the source of truth. Before implementation starts, the issue sh
    git remote prune origin # Clean up deleted remote branches
    ```
 
-6. **Verify clean state**: Ensure all changesa re committed and pushed, no untracked files remain.
+6. **Verify clean state**: Ensure all changes are committed and pushed, no untracked files remain.
 7. **Choose a follow-up issue for next session**
-   - Provide a promptyfor the use to give yo you in the next session.
+   - Provide a prompt for the user to give you in the next session.
    - Format: [Continue work on <issue id>: <short description>] [Brief context about what's been done and what's next]"
 
 **CRITICAL RULES:**
